@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authMiddleware from "./middlewares/auth";
 import cors from "cors";
 import postRouter from "./routes/postRouter";
+import categoryRouter from "./routes/categoryRouter";
 
 // Apply auth middleware to all routes
 dotenv.config();
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/posts", postRouter);
+app.use("/api/categories", categoryRouter);
 
 // Start server
 if (process.env.NODE_ENV !== "test") {
