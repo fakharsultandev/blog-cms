@@ -5,13 +5,13 @@ import { validateObjectId } from "../validators/objectIdValidator";
 import { validatePost } from "../validators/postValidator";
 
 export async function getAllPost(req: Request, res: Response) {
-  const posts = await Post.find({});
+  const posts = await Post.find({}).populate("category").select("-__v");
   res.status(200).json(posts);
 }
 
 export async function getPostBySlug(req: Request, res: Response) {
   const slug = req.params.slug;
-  const post = await Post.findOne({ slug });
+  const post = await Post.findOne({ slug }).populate("cateogry");
   if (!post) {
     res.status(404).json({ message: "Post not found" });
   } else {
@@ -81,6 +81,26 @@ export async function updatePost(req: Request, res: Response) {
     const updatedPost = await Post.findByIdAndUpdate(id, postBody, {
       new: true,
     });
+    return res.status(200).send(updatedPost);
+  } catch (error) {
+    if (error instanceof z.ZodError)
+      return res.status(400).json({ error: error.errors });
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function updatePostField(req: Request, res: Response) {
+  try {
+    const postBody = req.body; // Get the updated post body
+    const id = req.params.id;
+    await validateObjectId.parseAsync(id);
+    const updatedPost = await Post.updateOne(
+      { _id: id },
+      {
+        $set: postBody,
+      }
+    );
     return res.status(200).send(updatedPost);
   } catch (error) {
     if (error instanceof z.ZodError)

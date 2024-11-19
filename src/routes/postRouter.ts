@@ -6,6 +6,7 @@ import {
   getPostById,
   getPostBySlug,
   updatePost,
+  updatePostField,
 } from "../controllers/postController";
 import authMiddleware from "../middlewares/auth";
 
@@ -20,5 +21,6 @@ router.get("/:id", getPostById);
 router.post("/", authMiddleware, createPost);
 router.delete("/:id", authMiddleware, deletePost);
 router.put("/:id", authMiddleware, updatePost);
+router.patch("/:id", authMiddleware, updatePostField);
 
 export default router; // export the router

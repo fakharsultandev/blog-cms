@@ -23,7 +23,7 @@ Emitted 'error' event on ReadStream instance at:
 }
 
 Node.js v22.9.0
-(node:7454) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(node:11809) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 Server running on port 3000
 Connected to MongoDB
