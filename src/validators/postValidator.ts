@@ -1,35 +1,30 @@
 import { z } from "zod";
 import mongoose from "mongoose";
-import Category from "../models/Category";
-
-// Async category validation
-const categoryValidation = z.string().refine(
-  async (value) => {
-    // Check if the provided value is a valid MongoDB ObjectId
-    if (!mongoose.Types.ObjectId.isValid(value)) {
-      throw new Error("Invalid category ID");
-    }
-
-    const exists = await Category.exists({ _id: value });
-    if (!exists) {
-      throw new Error("Category does not exist");
-    }
-
-    return true;
-  },
-  {
-    message: "Invalid category",
-  }
-);
 
 export const validatePost = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  content: z.string().min(1, { message: "Content is required" }),
-  tags: z.array(z.string()).min(1, { message: "Tags are required" }),
-  readTime: z.number().min(1, { message: "Read time is required" }),
-  isPublished: z.boolean().default(false),
-  description: z.string().min(1, { message: "Description is required" }),
-  slug: z.string().min(1, { message: "Slug is required" }),
-  access: z.enum(["user", "guest"]),
-  category: categoryValidation, // Apply the category validation here
+  _id: z.string().uuid().optional(),
+  title: z
+    .string()
+    .min(1)
+    .max(50, { message: "Title must be at most 50 characters" }),
+  tags: z.array(z.string()).min(1, { message: "At least one tag is required" }),
+  image: z.string().optional(),
+  slug: z.string().min(1, { message: "Slug must be at least 1 character" }),
+  description: z
+    .string()
+    .min(10, { message: "Description must be at least 10 characters" })
+    .max(50, { message: "Description must be at most 50 characters" }),
+  sanitizedHTML: z.string().min(1, { message: "HTML content required" }),
+  markdown: z.string().min(1, { message: "Markdown content required" }),
+  accessedBy: z.enum(["user", "guest"]),
+  published: z.boolean().default(false),
+  readTime: z.number().min(1), // in minutes
+  category: z
+    .string()
+    .refine((value) => mongoose.Types.ObjectId.isValid(value), {
+      message: "Invalid category ID",
+    })
+    .transform((value) => new mongoose.Types.ObjectId(value)),
 });
+
+export type Post = z.infer<typeof validatePost>;

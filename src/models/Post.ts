@@ -1,32 +1,23 @@
 import mongoose from "mongoose";
+import { Post } from "../validators/postValidator";
 
-export interface IPost extends mongoose.Document {
-  title: string;
-  content: string;
-  tags: string[];
-  readTime: number;
-  isPublished: boolean;
-  description: string;
-  slug: string;
-  access: "user" | "guest";
-  category: mongoose.Schema.Types.ObjectId;
-}
-
-const postSchema = new mongoose.Schema<IPost>(
+const postSchema = new mongoose.Schema<Post>(
   {
     title: { type: String, required: true },
-    content: { type: String, required: true },
+    sanitizedHTML: { type: String, required: true },
     tags: { type: [String], required: true },
     readTime: { type: Number, required: true },
-    isPublished: { type: Boolean, required: true, default: false },
+    published: { type: Boolean, required: true, default: false },
     description: { type: String, required: true },
     slug: { type: String, required: true },
-    access: { type: String, required: true },
+    accessedBy: { type: String, required: true },
+    markdown: { type: String, required: true },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+    image: { type: String, required: false },
   },
   { timestamps: true }
 );
 
-const Post = mongoose.model<IPost>("Post", postSchema);
+const Post = mongoose.model<Post>("Post", postSchema);
 
 export default Post;
